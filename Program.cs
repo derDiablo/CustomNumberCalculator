@@ -2,21 +2,29 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+/// <summary>
+/// Класс, представляющий целое число в системе счисления 2,8,10,16.
+/// Число хранится в виде массива разрядов (младший разряд — первый элемент).
+/// </summary>
 public class CustomNumber
 {
-    private List<int> digits;   
-    public int Base { get; }   
+    private List<int> digits;   // список цифр числа (0..15)
+    public int Base { get; }    // основание системы счисления
 
+    // Конструктор из строки и основания
     public CustomNumber(string value, int baseSystem)
     {
+        // Проверка допустимости основания
         if (baseSystem != 2 && baseSystem != 8 && baseSystem != 10 && baseSystem != 16)
             throw new ArgumentException("Основание должно быть 2, 8, 10 или 16");
 
+        // Проверка на пустую строку
         if (string.IsNullOrWhiteSpace(value))
             throw new ArgumentException("Число не может быть пустым");
 
         Base = baseSystem;
         digits = new List<int>();
+        // Парсим строку справа налево (младший разряд — первый в списке)
         for (int i = value.Length - 1; i >= 0; i--)
         {
             char c = value[i];
@@ -34,11 +42,12 @@ public class CustomNumber
                 throw new ArgumentException($"Цифра '{c}' недопустима для системы {Base}");
             digits.Add(digit);
         }
-
+        // Удаляем ведущие нули
         while (digits.Count > 1 && digits[digits.Count - 1] == 0)
             digits.RemoveAt(digits.Count - 1);
     }
 
+    // Преобразование в десятичное число (используем long для предотвращения переполнения)
     private long ToDecimal()
     {
         long res = 0, pow = 1;
@@ -50,6 +59,7 @@ public class CustomNumber
         return res;
     }
 
+    // Создание объекта CustomNumber из десятичного числа long
     private static CustomNumber FromDecimal(long val, int targetBase)
     {
         if (val == 0)
@@ -61,12 +71,13 @@ public class CustomNumber
             list.Add((int)(temp % targetBase));
             temp /= targetBase;
         }
-
+        // Создаём временный объект и подменяем его список цифр
         var num = new CustomNumber("0", targetBase);
         num.digits = list;
         return num;
     }
 
+    // Преобразование в строку в текущей системе счисления
     public override string ToString()
     {
         var sb = new StringBuilder();
@@ -78,6 +89,7 @@ public class CustomNumber
         return sb.ToString();
     }
 
+    // Арифметические операторы (используют long)
     public static CustomNumber operator +(CustomNumber a, CustomNumber b) =>
         FromDecimal(a.ToDecimal() + b.ToDecimal(), a.Base);
     public static CustomNumber operator -(CustomNumber a, CustomNumber b) =>
@@ -89,6 +101,7 @@ public class CustomNumber
     public static CustomNumber operator %(CustomNumber a, CustomNumber b) =>
         FromDecimal(a.ToDecimal() % b.ToDecimal(), a.Base);
 
+    // Операторы сравнения
     public static bool operator ==(CustomNumber a, CustomNumber b) => a.ToDecimal() == b.ToDecimal();
     public static bool operator !=(CustomNumber a, CustomNumber b) => !(a == b);
     public static bool operator <(CustomNumber a, CustomNumber b) => a.ToDecimal() < b.ToDecimal();
@@ -96,8 +109,10 @@ public class CustomNumber
     public static bool operator <=(CustomNumber a, CustomNumber b) => a.ToDecimal() <= b.ToDecimal();
     public static bool operator >=(CustomNumber a, CustomNumber b) => a.ToDecimal() >= b.ToDecimal();
 
+    // Перевод в другую систему счисления
     public CustomNumber ConvertTo(int newBase) => FromDecimal(ToDecimal(), newBase);
 
+    // Вспомогательные методы для ввода и вывода (рефакторинг Main)
     private static int ReadSystem(string prompt)
     {
         while (true)
