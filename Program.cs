@@ -17,7 +17,7 @@ public class CustomNumber
         // Проверка допустимости основания
         if (baseSystem != 2 && baseSystem != 8 && baseSystem != 10 && baseSystem != 16)
             throw new ArgumentException("Основание должно быть 2, 8, 10 или 16");
-
+        
         // Проверка на пустую строку
         if (string.IsNullOrWhiteSpace(value))
             throw new ArgumentException("Число не может быть пустым");
@@ -214,7 +214,7 @@ public class CustomNumber
     {
         Console.WriteLine("=== Калькулятор чисел в системах счисления (2,8,10,16) ===\n");
         Console.WriteLine("Доступные системы: 2 (двоичная), 8 (восьмеричная), 10 (десятичная), 16 (шестнадцатеричная)");
-
+        
         int systemBase = ReadSystem("Выберите систему счисления для ввода: ");
         string str1 = ReadNumber("Введите первое число в этой системе: ");
         string str2 = ReadNumber("Введите второе число в этой системе: ");
